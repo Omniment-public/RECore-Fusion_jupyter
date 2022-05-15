@@ -33,7 +33,7 @@ chmod 777 $APP_DIR/*
 chmod 777 $INFO_DIR
 
 # stop and remove old container
-IMG_NAME="$(docker ps -a -f name="$APP_NAME" --format {{.Image}})"
+OLD_IMG_NAME="$(docker ps -a -f name="$APP_NAME" --format {{.Image}})"
 docker rename $APP_NAME $APP_NAME"_"
 docker stop $APP_NAME"_"
 
@@ -45,7 +45,7 @@ docker run -d --privileged -p8888:8888 -v /dev:/dev -v $APP_DIR/fusion-notebook:
 
 if [ $RUN_STATE = 1 ];then
 	docker rm -f $APP_NAME"_"
-	docker rmi -f $IMG_NAME
+	docker rmi -f $OLD_IMG_NAME
 	#docker image prune -f | grep "recore-jupyter"
 	# write repo info
 	sudo bash -c "echo $REPO_INFO > $REPO_INFO_FILE"
