@@ -5,7 +5,7 @@ APP_NAME="recore-jupyter"
 DIPS_NAME="Jupyter Notebook"
 IMG_NAME="recore-jupyter-image.tar.gz"
 REPO_INFO="Omniment-public/RECore-Fusion_jupyter"
-VERSION="v0.0.1"
+VERSION="v0.1.0"
 APP_LINK="location.host:8888"
 
 SYS_DIR="/usr/local/bin/recore/files"
@@ -41,7 +41,8 @@ docker stop $APP_NAME"_"
 docker load -i $INSTALL_FILES/$IMG_NAME
 
 RUN_STATE=0
-docker run -d --privileged -p8888:8888 -v /dev:/dev -v $APP_DIR/fusion-notebook:/home/recore/fusion-notebook -v $APP_DIR/site-package:/home/recore/.local/lib/python3.9/site-packages --name recore-jupyter recore-jupyter:$VERSION jupyter notebook && RUN_STATE=1
+docker run -d --privileged -p8888:8888 -v /dev:/dev -v /run/udev:/run/udev -v /sys/kernel/debug:/sys/kernel/debug -v $APP_DIR/fusion-notebook:/home/recore/fusion-notebook -v $APP_DIR/dist-packages:/usr/lib/python3.11/dist-packages --name recore-jupyter recore-jupyter:$VERSION jupyter notebook && RUN_STATE=1
+#docker run -d --privileged -p8888:8888 -v /dev:/dev -v /run/udev:/run/udev -v /sys/kernel/debug:/sys/kernel/debug -v /home/recore/fusion-files/recore-jupyter/fusion-notebook:/home/recore/fusion-notebook -v /home/recore/fusion-files/recore-jupyter/dist-packages:/usr/lib/python3.11/dist-packages --name recore-jupyter recore-jupyter:v0.1.0 jupyter notebook && RUN_STATE=1
 
 if [ $RUN_STATE = 1 ];then
 	docker rm -f $APP_NAME"_"

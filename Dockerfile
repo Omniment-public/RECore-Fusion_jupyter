@@ -48,7 +48,7 @@ RUN pip install --no-cache-dir certifi chardet colorzero distro gpiozero idna re
 # RUN pip install urllib3
 # RUN pip install wheel
 
-RUN pip install jupyter-contrib-nbextensions --break-system-packages
+RUN pip install --no-cache-dir jupyter-contrib-nbextensions --break-system-packages
 
 RUN pip install --no-cache-dir numpy pandas scipy matplotlib --break-system-packages
 # RUN pip install pandas
