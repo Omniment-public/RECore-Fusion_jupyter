@@ -1,4 +1,5 @@
-FROM debian
+FROM dtcooper/raspberrypi-os:bookworm
+#FROM debian
 MAINTAINER OMNIMENT INC.
 
 USER root
@@ -23,7 +24,7 @@ ENV LC_ALL ja_JP.UTF-8
 #RUN apt-get install -qy unzip
 #RUN apt-get install -qy python3
 #RUN apt-get install -qy python3-pip
-RUN pip install -U pip
+RUN pip install -U pip --break-system-packages
 
 #RUN apt-get install -qy jupyter-notebook
 #RUN apt-get -qy install fonts-noto-cjk
@@ -31,7 +32,7 @@ RUN pip install -U pip
 
 #RUN apt-get -qy autoremove
 
-RUN pip install --no-cache-dir certifi chardet colorzero distro gpiozero idna requests RPi.GPIO setuptools six spidev ssh-import-id urllib3 wheel
+RUN pip install --no-cache-dir certifi chardet colorzero distro gpiozero idna requests RPi.GPIO setuptools six spidev ssh-import-id urllib3 wheel opencv-python --break-system-packages
 # RUN pip install chardet
 # RUN pip install colorzero
 # RUN pip install distro
@@ -47,19 +48,23 @@ RUN pip install --no-cache-dir certifi chardet colorzero distro gpiozero idna re
 # RUN pip install urllib3
 # RUN pip install wheel
 
-RUN pip install jupyter-contrib-nbextensions
+RUN pip install jupyter-contrib-nbextensions --break-system-packages
 
-RUN pip install --no-cache-dir numpy pandas scipy matplotlib
+RUN pip install --no-cache-dir numpy pandas scipy matplotlib --break-system-packages
 # RUN pip install pandas
 # RUN pip install scipy
 # RUN pip install matplotlib
 
-#RUN pip install -U picamera
-#RUN pip install -U opencv-python
-#RUN pip install -U torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+# install cam app
+# install cam driver
+RUN apt-get install -qy imx500-all
+# install picamera 2
+RUN apt install -qy imx500-all python3-picamera2
+# install cv2
+
 
 COPY ./pyrecore-0.0.0-py3-none-any.whl /
-RUN pip install pyrecore-0.0.0-py3-none-any.whl
+RUN pip install pyrecore-0.0.0-py3-none-any.whl --break-system-packages
 
 # make user "recore"
 ARG UID=1000
@@ -85,11 +90,15 @@ RUN groupadd -f -g 20 dialout && groupadd -f -g 29 audio && groupadd -f -g 44 vi
 #RUN groupadd -f -g 998 i2c
 #RUN groupadd -f -g 999 spi
 
+RUN pip uninstall traitlets --break-system-packages -y
+RUN pip install traitlets==5.9.0 --break-system-packages
+
 RUN useradd -m -u ${UID} -g ${GID_root} -G ${GID_secondary} recore
 USER recore
 
 # make jupyter directory
 RUN mkdir /home/recore/fusion-notebook
+
 
 RUN jupyter notebook --generate-config -y
 
@@ -108,4 +117,4 @@ COPY ./jupyter_notebook_config.py /home/recore/.jupyter/
 RUN chmod 777 /home/recore/fusion-notebook
 
 #docker build -t jupyter-recore .
-#docker run -d --privileged -v /dev:/dev -v /home/recore/fusion-files/fusion-notebook:/home/recore/fusion-notebook -v /home/recore/fusion-files/site-package:/home/recore/.local/lib/python3.9/site-packages -p8888:8888 --restart=always --name jupyter recore-jupyter jupyter notebook
+#docker run -d --privileged -v /dev:/dev -v /home/recore/fusion-files/fusion-notebook:/home/recore/fusion-notebook -v /home/recore/fusion-files/site-package:/home/recore/.local/lib/python3.9/site-packages -v /run/udev:/run/udev -p8888:8888 --restart=always --name jupyter recore-jupyter jupyter notebook
