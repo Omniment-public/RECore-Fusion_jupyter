@@ -12,21 +12,17 @@ echo "make release package"
 
 # mkdir release
 mkdir $RELEASEDIR
-mkdir $RELEASEDIR/recore-jupyter
 
 # cp files
 cp install.sh ./$RELEASEDIR
-cp install_sys.sh ./$RELEASEDIR
-cp -r raspberry-pi ./$RELEASEDIR
-cp ./recore-jupyter/install.sh ./$RELEASEDIR/recore-jupyter
 
 # build docker
 echo "build docker image"
-sudo chmod +x ./recore-jupyter/build_release.sh
-sudo ./recore-jupyter/build_release.sh $1
+sudo chmod +x ./build_release.sh
+sudo ./build_release.sh $1
 
 echo "move package"
-mv ./recore-jupyter/recore-jupyter-image.tar.gz ./$RELEASEDIR/recore-jupyter
+mv ./recore-jupyter-image.tar.gz ./$RELEASEDIR
 
 echo "compress package"
 tar -zcvf recore-jupyter-$1.tar.gz $RELEASEDIR
